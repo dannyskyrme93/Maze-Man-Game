@@ -55,7 +55,6 @@ class GameWindow(pyglet.window.Window):
                     self.edge_list.append(root_index + GameWindow.WIDTH_IN_SQUARES)
         print(self.edge_list)
 
-
     def on_key_release(self, symbol, modifiers):
         if symbol == key.MOTION_UP:
             self.model.sprite_obj.vely = 0

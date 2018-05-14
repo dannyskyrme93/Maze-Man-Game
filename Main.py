@@ -1,6 +1,7 @@
 import pyglet
 from pyglet.window import key
 import GameWindow
+import LiveObject
 
 def update(dt):
     wind.update(dt)
@@ -11,7 +12,6 @@ keys = key.KeyStateHandler()
 wind.push_handlers(keys)
 
 tick = 0
-
 pyglet.clock.schedule_interval(update, 0.05)
 
 pyglet.app.run()

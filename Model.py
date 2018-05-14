@@ -1,5 +1,5 @@
 import random as ran
-from GameObject import GameObject
+from LiveObject import LiveObject
 
 class Model:
 
@@ -7,7 +7,7 @@ class Model:
         self.width = w
         self.height = h
         Model.vert, Model.horz = self.build_line_table()
-        self.sprite_obj = GameObject(20, 20, "sprite")
+        self.sprite_obj = LiveObject(20, 20, "sprite")
         self.charge = 0
 
     def build_line_table(self):
