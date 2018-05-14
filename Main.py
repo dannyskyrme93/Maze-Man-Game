@@ -12,7 +12,8 @@ keys = key.KeyStateHandler()
 wind.push_handlers(keys)
 
 tick = 0
-pyglet.clock.schedule_interval(update, 0.05)
+dt = 1.0/40
+pyglet.clock.schedule_interval(update, dt)
 
 pyglet.app.run()
 

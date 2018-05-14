@@ -4,11 +4,10 @@ from pyglet.window import key
 from SoundBase import SoundBase as SB
 from Model import Model
 
-
 class GameWindow(pyglet.window.Window):
     ADJ_CONSTANT = 0.25
     SQUARE_SIZE = 25
-    GLOW_COLOUR_ARR = (255, 215, 0, 255, 215, 0, 255, 215, 0, 255, 215, 0)
+    GLOW_COLOUR_ARR = (255, 215, 0)
 
     WIDTH_IN_SQUARES = 80
     HEIGHT_IN_SQUARES = 40
@@ -18,6 +17,7 @@ class GameWindow(pyglet.window.Window):
 
     def __init__(self):
         super().__init__()
+        self.fps_display = pyglet.clock.ClockDisplay()
         self.set_location(10, 30)
         self.model = Model(GameWindow.WIDTH_IN_SQUARES, GameWindow.HEIGHT_IN_SQUARES)
         self.set_size(GameWindow.WIDTH_IN_SQUARES * GameWindow.SQUARE_SIZE, GameWindow.HEIGHT_IN_SQUARES * GameWindow.SQUARE_SIZE)
@@ -27,20 +27,29 @@ class GameWindow(pyglet.window.Window):
         self.update_edge_list()
         self.update_vertex_list()
         self.sounds = SB()
+        self.glow_batch = None
 
     def on_draw(self):
         self.clear()
-
         square_size = self.SQUARE_SIZE
-        for xy in self.model.reg_model.glow_pts:
-            print(xy)
-            colours = tuple([int(x * self.model.reg_model.glow/self.model.reg_model.GLOW_TIME)
-                             for x in self.GLOW_COLOUR_ARR])
-            x, y = xy[0] * square_size, xy[1] * square_size
-            dx = x + square_size
-            dy = y + square_size
-            in_pts = (x, y, dx, y, dx, dy, x, dy)
-            pyglet.graphics.draw(4, pyglet.gl.GL_QUADS, ('v2i', in_pts), ('c3B', colours))
+        num_of_glow = len(self.model.reg_model.glow_pts)
+        if num_of_glow > 0:
+            glow_vertex_list = []
+            glow_colour_list = [int(x * self.model.reg_model.glow/self.model.reg_model.GLOW_TIME)
+                           for x in self.GLOW_COLOUR_ARR]
+            glow_colour_list = tuple(glow_colour_list*(num_of_glow*4))
+            for xy in self.model.reg_model.glow_pts:
+                x, y = xy[0] * square_size, xy[1] * square_size
+                dx = x + square_size
+                dy = y + square_size
+                in_pts = [x, y, dx, y, dx, dy, x, dy]
+                glow_vertex_list = glow_vertex_list + in_pts
+            glow_vertex_list = tuple(glow_vertex_list)
+            print(4*num_of_glow,len(glow_vertex_list)/2, len(glow_colour_list)/3, sep="|")
+            self.glow_batch.add(4 * num_of_glow, pyglet.gl.GL_QUADS, None, ('v2i', glow_vertex_list),
+                                ('c3B', glow_colour_list))
+            self.glow_batch.draw()
+        self.glow_batch = pyglet.graphics.Batch()
         self.vertex_list.draw(pyglet.gl.GL_LINES)
         for obj in self.model.objects.values():
             current_sprite = pyglet.sprite.Sprite(obj.get_image())
@@ -49,6 +58,7 @@ class GameWindow(pyglet.window.Window):
             current_sprite.scale = (GameWindow.SQUARE_SIZE - 1) / current_sprite.width
             current_sprite.draw()
         self.sprite.draw()
+        self.fps_display.draw()
 
     def update_vertex_list(self):
         temp = []

@@ -15,6 +15,7 @@ class Model:
         self.charge = 0
         self.sprite_obj = LiveObject(0, 0, "sprite")
         self.add_pick_ups(8)
+        self.glow_changed = False
 
     def build_line_table(self):
         vert = [[bool(ran.randint(0, 1)) for x in range(0, self.width-1)]
@@ -37,6 +38,7 @@ class Model:
             self.sprite_obj.discharge_it
             self.reg_model.fill_ids(self.vert, self.horz)
             self.reg_model.trigger_glow(self.sprite_obj.posx, self.sprite_obj.posy)
+            self.glow_changed = True
 
     def update(self):
         if self.sprite_obj.velx > 0 and \
@@ -69,3 +71,9 @@ class Model:
         for x in range(0, num_of):
             self.objects[rand.getrandbits(16)] = \
             GameObject(rand.randint(0, self.width), rand.randint(0, self.height), "Pickup")
+
+    def is_glow_changed(self):
+        if self.glow_changed:
+            self.glow_changed = False
+            return True
+        return False
