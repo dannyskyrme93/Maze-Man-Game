@@ -21,6 +21,7 @@ class GameWindow(pyglet.window.Window):
         self.set_size(GameWindow.WIDTH_IN_SQUARES * GameWindow.SQUARE_SIZE, GameWindow.HEIGHT_IN_SQUARES * GameWindow.SQUARE_SIZE)
         self.sprite = pyglet.sprite.Sprite(self.model.sprite_obj.get_image())
         self.sprite.scale = (GameWindow.SQUARE_SIZE - 1) / self.sprite.width
+        self.objs = {}
         self.update_edge_list()
         self.update_vertex_list()
         self.sounds = SB()
@@ -28,7 +29,16 @@ class GameWindow(pyglet.window.Window):
     def on_draw(self):
         self.clear()
         self.vertex_list.draw(pyglet.gl.GL_LINES)
+        square_size = self.SQUARE_SIZE
+        for obj in self.model.objects.values():
+            current_sprite = pyglet.sprite.Sprite(obj.get_image())
+            current_sprite.x = obj.posx * square_size
+            current_sprite.y = obj.posy * square_size
+            current_sprite.scale = (GameWindow.SQUARE_SIZE - 1) / current_sprite.width
+            current_sprite.draw()
         self.sprite.draw()
+
+
 
     def update_vertex_list(self):
         temp = []

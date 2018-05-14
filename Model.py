@@ -1,5 +1,7 @@
 import random as ran
 from LiveObject import LiveObject
+from GameObject import GameObject
+import random as rand
 
 class Model:
 
@@ -7,8 +9,10 @@ class Model:
         self.width = w
         self.height = h
         Model.vert, Model.horz = self.build_line_table()
-        self.sprite_obj = LiveObject(20, 20, "sprite")
+        self.objects = {}
         self.charge = 0
+        self.sprite_obj = LiveObject(20, 20, "sprite")
+        self.add_pick_ups(8)
 
     def build_line_table(self):
         vert = [[bool(ran.randint(0, 1)) for x in range(0, self.width-1)]
@@ -46,6 +50,19 @@ class Model:
         if self.sprite_obj.vely < 0 and not Model.horz[self.sprite_obj.posy][self.sprite_obj.posx] \
                 and self.sprite_obj.posy > 0:
             self.sprite_obj.posy += self.sprite_obj.vely
+        self.collisions()
 
+    def collisions(self):
+        objs = self.objects.copy()
+        for id in objs:
+            obj = self.objects[id]
+            val = (obj.posx, obj.posy)
+            if (self.sprite_obj.posx, self.sprite_obj.posy) == val:
+                del self.objects[id]
+                self.add_pick_ups(1)
 
+    def add_pick_ups(self, num_of):
+        for x in range(0, num_of):
+            self.objects[rand.getrandbits(16)] = \
+            GameObject(rand.randint(0, self.width), rand.randint(0, self.height), "Pickup")
 
