@@ -2,6 +2,7 @@ import random as ran
 from LiveObject import LiveObject
 from GameObject import GameObject
 import random as rand
+import RegionModel as rm
 
 class Model:
 
@@ -9,16 +10,17 @@ class Model:
         self.width = w
         self.height = h
         Model.vert, Model.horz = self.build_line_table()
+        self.reg_model = rm.RegionModel(Model.vert, Model.horz)
         self.objects = {}
         self.charge = 0
-        self.sprite_obj = LiveObject(20, 20, "sprite")
+        self.sprite_obj = LiveObject(0, 0, "sprite")
         self.add_pick_ups(8)
 
     def build_line_table(self):
         vert = [[bool(ran.randint(0, 1)) for x in range(0, self.width-1)]
-                for y in range(0, self.height)]
+                for y in range(0, self.height-1)]
         horz = [[bool(ran.randint(0, 1)) for x in range(0, self.width-1)]
-                for y in range(0, self.height)]
+                for y in range(0, self.height-1)]
         return vert, horz
 
     def break_line(self):
@@ -32,8 +34,9 @@ class Model:
                 Model.horz[self.sprite_obj.posy][self.sprite_obj.posx] = False
             else:
                 Model.vert[self.sprite_obj.posy][self.sprite_obj.posx] = False
-
             self.sprite_obj.discharge_it
+            self.reg_model.fill_ids(self.vert, self.horz)
+            self.reg_model.trigger_glow(self.sprite_obj.posx, self.sprite_obj.posy)
 
     def update(self):
         if self.sprite_obj.velx > 0 and \
@@ -51,6 +54,7 @@ class Model:
                 and self.sprite_obj.posy > 0:
             self.sprite_obj.posy += self.sprite_obj.vely
         self.collisions()
+        self.reg_model.update_glow()
 
     def collisions(self):
         objs = self.objects.copy()
@@ -65,4 +69,3 @@ class Model:
         for x in range(0, num_of):
             self.objects[rand.getrandbits(16)] = \
             GameObject(rand.randint(0, self.width), rand.randint(0, self.height), "Pickup")
-
