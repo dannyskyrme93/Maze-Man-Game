@@ -3,6 +3,7 @@ import pyglet
 
 
 class LiveObject(GameObject.GameObject):
+
     threshold = 10
 
     def __init__(self, posx, posy, filename):
