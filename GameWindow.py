@@ -34,7 +34,6 @@ class GameWindow(pyglet.window.Window):
         for x in range(0, RegionModel.GLOW_TRAIL):
             y = (RegionModel.GLOW_TRAIL - x) / RegionModel.GLOW_TRAIL
             self.glow_colours += [int(GameWindow.GLOW_COLOUR_ARR[c] * y) for c in range(0, 3)]
-        print(self.model.reg_model.vert[0])
 
     def on_draw(self):
         self.clear()
@@ -42,7 +41,6 @@ class GameWindow(pyglet.window.Window):
         if not self.model.reg_model.glow_pts == []:
             self.glow_batch = pyglet.graphics.Batch()
             arr = self.model.reg_model.get_current_points()
-            print("all of 'em: ", arr)
             for x in range(0, min(len(arr), RegionModel.GLOW_TRAIL)):
                 group = arr[x]
                 print("Group: ", group)
