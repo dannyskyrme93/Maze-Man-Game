@@ -11,7 +11,6 @@ g_window = GameWindow.GameWindow()
 keys = key.KeyStateHandler()
 g_window.push_handlers(keys)
 context = g_window.context
-print(context.config.double_buffer)
 tick = 0
 dt = 1.0/40
 pyglet.clock.set_fps_limit(90)
