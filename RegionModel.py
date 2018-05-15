@@ -1,3 +1,4 @@
+import random as rand
 
 class RegionModel:
     GLOW_TRAIL = 20
@@ -48,15 +49,16 @@ class RegionModel:
             if depth >= len(self.glow_pts):
                 self.glow_pts.append([])
             self.glow_pts[depth].append((x, y))
+
             # North
             if y < self.height - 1 and not self.horz[y+1][x]:
                 self.flood_fill_glow(x, y+1, eye, depth + 1)
+            # East
+            if x < self.width - 1 and not self.vert[y][x + 1]:
+                self.flood_fill_glow(x + 1, y, eye, depth + 1)
             # South
             if y > 0 and not self.horz[y][x]:
                 self.flood_fill_glow(x, y-1, eye, depth + 1)
-            # East
-            if x < self.width - 1 and not self.vert[y][x+1]:
-                self.flood_fill_glow(x+1, y, eye, depth + 1)
             # West
             if x > 0 and not self.vert[y][x]:
                 self.flood_fill_glow(x-1, y, eye, depth + 1)
@@ -68,7 +70,8 @@ class RegionModel:
         self.glow = RegionModel.GLOW_TRAIL
         eye = self.reg_map[y][x]
         self.flood_fill_glow(x, y, eye, 0)
-
+        for a in self.glow_pts:
+            rand.shuffle(a)
         print("The points ", self.glow_pts)
 
     def clear_glow(self):
@@ -92,5 +95,26 @@ class RegionModel:
             return pts
         else:
             return []
+
+    def remove_superfluous_lines(self):
+        print(self.width, self.height, sep='|')
+        for y in range(0, self.height):
+            for x in range(0, self.width):
+                print('doing')
+                val = self.reg_map[y][x]
+                # North
+                if y < self.height - 1 and self.reg_map[y+1][x] == val:
+                    self.horz[y+1][x] = False
+                # South
+                if y > 0 and self.reg_map[y-1][x] == val:
+                    self.horz[y][x] = False
+                # East
+                if x < self.width - 1 and self.reg_map[y][x+1] == val:
+                    self.vert[y][x + 1] = False
+                # West
+                if y > 0 - 1 and self.reg_map[y][x-1] == val:
+                    self.vert[y][x] = False
+        return self.vert, self.horz
+
 
 

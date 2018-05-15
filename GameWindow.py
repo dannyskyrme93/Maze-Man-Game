@@ -34,7 +34,7 @@ class GameWindow(pyglet.window.Window):
         for x in range(0, RegionModel.GLOW_TRAIL):
             y = (RegionModel.GLOW_TRAIL - x) / RegionModel.GLOW_TRAIL
             self.glow_colours += [int(GameWindow.GLOW_COLOUR_ARR[c] * y) for c in range(0, 3)]
-        print("Glow multipliers: ", self.glow_colours)
+        print(self.model.reg_model.vert[0])
 
     def on_draw(self):
         self.clear()

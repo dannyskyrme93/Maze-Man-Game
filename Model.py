@@ -6,13 +6,14 @@ import RegionModel as rm
 
 class Model:
 
-    DISCONNECT = 0.4
+    DISCONNECT = 0.45
 
     def __init__(self, w, h):
         self.width = w
         self.height = h
         Model.vert, Model.horz = self.build_line_table()
         self.reg_model = rm.RegionModel(Model.vert, Model.horz)
+        Model.vert, Model.horz = self.reg_model.remove_superfluous_lines()
         self.objects = {}
         self.charge = 0
         self.sprite_obj = LiveObject(0, 0, "sprite")
@@ -80,3 +81,4 @@ class Model:
             self.glow_changed = False
             return True
         return False
+
