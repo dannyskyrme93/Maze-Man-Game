@@ -6,6 +6,8 @@ import RegionModel as rm
 
 class Model:
 
+    DISCONNECT = 0.4
+
     def __init__(self, w, h):
         self.width = w
         self.height = h
@@ -18,9 +20,9 @@ class Model:
         self.glow_changed = False
 
     def build_line_table(self):
-        vert = [[bool(ran.randint(0, 1)) for x in range(0, self.width-1)]
+        vert = [[(rand.random() > Model.DISCONNECT) for x in range(0, self.width-1)]
                 for y in range(0, self.height-1)]
-        horz = [[bool(ran.randint(0, 1)) for x in range(0, self.width-1)]
+        horz = [[(rand.random() > Model.DISCONNECT) for x in range(0, self.width-1)]
                 for y in range(0, self.height-1)]
         return vert, horz
 

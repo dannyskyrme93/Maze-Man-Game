@@ -68,6 +68,7 @@ class RegionModel:
         self.glow = RegionModel.GLOW_TRAIL
         eye = self.reg_map[y][x]
         self.flood_fill_glow(x, y, eye, 0)
+
         print("The points ", self.glow_pts)
 
     def clear_glow(self):
