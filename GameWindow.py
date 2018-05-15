@@ -4,6 +4,7 @@ from pyglet.window import key
 from SoundBase import SoundBase as SB
 from Model import Model
 
+
 class GameWindow(pyglet.window.Window):
     ADJ_CONSTANT = 0.25
     SQUARE_SIZE = 25
@@ -45,10 +46,13 @@ class GameWindow(pyglet.window.Window):
                 in_pts = [x, y, dx, y, dx, dy, x, dy]
                 glow_vertex_list = glow_vertex_list + in_pts
             glow_vertex_list = tuple(glow_vertex_list)
-            print(4*num_of_glow,len(glow_vertex_list)/2, len(glow_colour_list)/3, sep="|")
             self.glow_batch.add(4 * num_of_glow, pyglet.gl.GL_QUADS, None, ('v2i', glow_vertex_list),
                                 ('c3B', glow_colour_list))
             self.glow_batch.draw()
+        elif self.model.sprite_obj.is_charging() :
+            # TODO pre-buffer glow
+            pass
+
         self.glow_batch = pyglet.graphics.Batch()
         self.vertex_list.draw(pyglet.gl.GL_LINES)
         for obj in self.model.objects.values():
@@ -59,6 +63,10 @@ class GameWindow(pyglet.window.Window):
             current_sprite.draw()
         self.sprite.draw()
         self.fps_display.draw()
+
+    def pre_render_glow(self):
+        pass
+
 
     def update_vertex_list(self):
         temp = []
@@ -121,7 +129,7 @@ class GameWindow(pyglet.window.Window):
     def update(self, dt):
         square_size = GameWindow.SQUARE_SIZE
         if self.tick % 3 == 0:
-            self.model.update()
+            self.model.update(dt)
 
         self.sprite.x = self.sprite.x + \
                         GameWindow.ADJ_CONSTANT * (self.model.sprite_obj.posx * square_size - self.sprite.x)

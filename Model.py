@@ -37,10 +37,10 @@ class Model:
                 Model.vert[self.sprite_obj.posy][self.sprite_obj.posx] = False
             self.sprite_obj.discharge_it
             self.reg_model.fill_ids(self.vert, self.horz)
-            self.reg_model.trigger_glow(self.sprite_obj.posx, self.sprite_obj.posy)
+            self.reg_model.trigger_glow(self.sprite_obj.posx, self.sprite_obj.posy, self.sprite_obj.dir)
             self.glow_changed = True
 
-    def update(self):
+    def update(self, dt):
         if self.sprite_obj.velx > 0 and \
                 not Model.vert[self.sprite_obj.posy ][self.sprite_obj.posx + 1] \
                 and self.sprite_obj.posx < self.width - 4:
