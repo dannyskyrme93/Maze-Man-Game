@@ -45,13 +45,8 @@ class GameWindow(pyglet.window.Window):
             arr = self.model.reg_model.get_current_points()
             for x in range(0, min(len(arr), RegionModel.GLOW_TRAIL)):
                 group = arr[x]
-                print("Group: ", group)
                 num_of = math.ceil(len(group))
                 glow_vertex_list = []
-                print(self.glow_colours)
-                print(self.glow_colours[x*3:x*3+3])
-                print(len(self.glow_colours))
-                print(x*3, x*3+3)
                 glow_colour_list = tuple(self.glow_colours[x*3:x*3+3] * (num_of * 4))
                 for xy in group:
                     x, y = xy[0] * square_size, xy[1] * square_size
@@ -60,9 +55,6 @@ class GameWindow(pyglet.window.Window):
                     in_pts = [x, y, dx, y, dx, dy, x, dy]
                     glow_vertex_list = glow_vertex_list + in_pts
                 glow_vertex_list = tuple(glow_vertex_list)
-                print(glow_vertex_list, len(glow_vertex_list) / 2, sep="|")
-                print(glow_colour_list, len(glow_colour_list) / 3, sep="|")
-                print("$", (4*num_of))
                 self.glow_batch.add(4 * num_of, pyglet.gl.GL_QUADS, None, ('v2i', glow_vertex_list),
                                     ('c3B', glow_colour_list))
             self.glow_batch.draw()

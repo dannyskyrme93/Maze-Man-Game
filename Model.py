@@ -4,11 +4,12 @@ from GameObject import GameObject
 import random as rand
 import RegionModel as rm
 from Action import Action
+from Percept import  Percept
 
 class Model:
 
     DISCONNECT = 0.45
-    NUM_OF_ENEMIES = 3
+    NUM_OF_ENEMIES = 1
     ID_LENGTH_IN_BITS = 16
 
     def __init__(self, w, h):
@@ -66,7 +67,8 @@ class Model:
                 and self.sprite_obj.posy > 0:
             self.sprite_obj.posy += self.sprite_obj.vely
         for enemy in self.enemies.values():
-            enemy.action(self)
+            per = Percept(self, enemy.posx, enemy.posy, 5)
+            enemy.action(per)
         self.update_enemies()
         self.collisions()
         self.reg_model.update_glow()

@@ -49,8 +49,9 @@ class LiveObject(GameObject):
         self.image = pyglet.image.load(LiveObject.PREFIX + self.filename + self.get_file_direction() +
                                        LiveObject.POSTFIX)
 
-    def action(self, model):
-        self.direction = self.agent.action(model, self)
+    def action(self, percept):
+        self.direction = Agent.action(percept)
+        print('the action is: ', self.direction)
         if self.direction == Action.UP_MOVE:
             self.vely = self.walk_vel
         elif self.direction == Action.RIGHT_MOVE:
