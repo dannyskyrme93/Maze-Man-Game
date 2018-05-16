@@ -20,7 +20,7 @@ class Model:
         Model.vert, Model.horz = self.reg_model.remove_superfluous_lines()
         self.pick_ups = {}
         self.charge = 0
-        self.sprite_obj = LiveObject(0, 0, "Sprite")
+        self.sprite_obj = LiveObject(self.width // 2, self.height // 2, "Sprite")
         self.add_pick_ups(8)
         self.glow_changed = False
         self.enemies = {}
@@ -67,7 +67,7 @@ class Model:
                 and self.sprite_obj.posy > 0:
             self.sprite_obj.posy += self.sprite_obj.vely
         for enemy in self.enemies.values():
-            per = Percept(self, enemy.posx, enemy.posy, 5)
+            per = Percept(self, enemy.posx, enemy.posy, 100)
             enemy.action(per)
         self.update_enemies()
         self.collisions()
@@ -108,6 +108,7 @@ class Model:
         for x in range(0, Model.NUM_OF_ENEMIES):
             eye = ran.getrandbits(Model.ID_LENGTH_IN_BITS)
             self.enemies[eye] = LiveObject(rand.randint(0, self.width-4), rand.randint(0, self.height-4), "Enemy", True)
+            self.enemies[eye].walk_vel = 1
         
 
     def is_glow_changed(self):
