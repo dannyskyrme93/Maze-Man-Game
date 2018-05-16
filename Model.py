@@ -3,10 +3,13 @@ from LiveObject import LiveObject
 from GameObject import GameObject
 import random as rand
 import RegionModel as rm
+from Action import Action
 
 class Model:
 
     DISCONNECT = 0.45
+    NUM_OF_ENEMIES = 3
+    ID_LENGTH_IN_BITS = 16
 
     def __init__(self, w, h):
         self.width = w
@@ -14,11 +17,13 @@ class Model:
         Model.vert, Model.horz = self.build_line_table()
         self.reg_model = rm.RegionModel(Model.vert, Model.horz)
         Model.vert, Model.horz = self.reg_model.remove_superfluous_lines()
-        self.objects = {}
+        self.pick_ups = {}
         self.charge = 0
-        self.sprite_obj = LiveObject(0, 0, "sprite")
+        self.sprite_obj = LiveObject(0, 0, "Sprite")
         self.add_pick_ups(8)
         self.glow_changed = False
+        self.enemies = {}
+        self.add_npcs()
 
     def build_line_table(self):
         vert = [[(rand.random() > Model.DISCONNECT) for x in range(0, self.width-1)]
@@ -29,7 +34,7 @@ class Model:
 
     def break_line(self):
         if self.sprite_obj.is_charged():
-            d = self.sprite_obj.dir
+            d = self.sprite_obj.direction
             if d == 0:
                 Model.horz[self.sprite_obj.posy + 1][self.sprite_obj.posx] = False
             elif d == 1:
@@ -53,28 +58,55 @@ class Model:
                 not Model.vert[self.sprite_obj.posy][self.sprite_obj.posx] \
                 and self.sprite_obj.posx > 0:
             self.sprite_obj.posx += self.sprite_obj.velx
+            self.sprite_obj.direction = 3
         if self.sprite_obj.vely > 0 and not Model.horz[self.sprite_obj.posy + 1][self.sprite_obj.posx] \
-                and self.sprite_obj.posy < (self.height - 2):
+                and self.sprite_obj.posy < (self.height - 3):
             self.sprite_obj.posy += self.sprite_obj.vely
         if self.sprite_obj.vely < 0 and not Model.horz[self.sprite_obj.posy][self.sprite_obj.posx] \
                 and self.sprite_obj.posy > 0:
             self.sprite_obj.posy += self.sprite_obj.vely
+        for enemy in self.enemies.values():
+            enemy.action(self)
+        self.update_enemies()
         self.collisions()
         self.reg_model.update_glow()
 
+    def update_enemies(self):
+        for enemy in self.enemies.values():
+            if enemy.velx > 0 and \
+                    not Model.vert[enemy.posy][enemy.posx + 1] \
+                    and enemy.posx < self.width - 4:
+                enemy.posx += enemy.velx
+            if enemy.velx < 0 and \
+                    not Model.vert[enemy.posy][enemy.posx] \
+                    and enemy.posx > 0:
+                enemy.posx += enemy.velx
+            if enemy.vely > 0 and not Model.horz[enemy.posy + 1][enemy.posx] \
+                    and enemy.posy < (self.height - 3):
+                enemy.posy += enemy.vely
+            if enemy.vely < 0 and not Model.horz[enemy.posy][enemy.posx] \
+                    and enemy.posy > 0:
+                enemy.posy += enemy.vely
+
     def collisions(self):
-        objs = self.objects.copy()
+        objs = self.pick_ups.copy()
         for id in objs:
-            obj = self.objects[id]
+            obj = self.pick_ups[id]
             val = (obj.posx, obj.posy)
             if (self.sprite_obj.posx, self.sprite_obj.posy) == val:
-                del self.objects[id]
+                del self.pick_ups[id]
                 self.add_pick_ups(1)
 
     def add_pick_ups(self, num_of):
         for x in range(0, num_of):
-            self.objects[rand.getrandbits(16)] = \
+            self.pick_ups[rand.getrandbits(Model.ID_LENGTH_IN_BITS)] = \
             GameObject(rand.randint(0, self.width), rand.randint(0, self.height), "Pickup")
+
+    def add_npcs(self):
+        for x in range(0, Model.NUM_OF_ENEMIES):
+            eye = ran.getrandbits(Model.ID_LENGTH_IN_BITS)
+            self.enemies[eye] = LiveObject(rand.randint(0, self.width-4), rand.randint(0, self.height-4), "Enemy", True)
+        
 
     def is_glow_changed(self):
         if self.glow_changed:
@@ -82,3 +114,6 @@ class Model:
             return True
         return False
 
+    def process_behaviours(self):
+        for enemy in self.enemies.values():
+            enemy.action()

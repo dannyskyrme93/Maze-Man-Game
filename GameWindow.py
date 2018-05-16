@@ -36,8 +36,10 @@ class GameWindow(pyglet.window.Window):
             self.glow_colours += [int(GameWindow.GLOW_COLOUR_ARR[c] * y) for c in range(0, 3)]
 
     def on_draw(self):
+        # Setup
         self.clear()
         square_size = self.SQUARE_SIZE
+        # Draw glow if present
         if not self.model.reg_model.glow_pts == []:
             self.glow_batch = pyglet.graphics.Batch()
             arr = self.model.reg_model.get_current_points()
@@ -65,14 +67,23 @@ class GameWindow(pyglet.window.Window):
                                     ('c3B', glow_colour_list))
             self.glow_batch.draw()
         self.glow_batch = pyglet.graphics.Batch()
+        # Draw line edges
         self.vertex_list.draw(pyglet.gl.GL_LINES)
-        for obj in self.model.objects.values():
+        # Draw sprites
+        for obj in self.model.pick_ups.values():
+            current_sprite = pyglet.sprite.Sprite(obj.get_image())
+            current_sprite.x = obj.posx * square_size
+            current_sprite.y = obj.posy * square_size
+            current_sprite.scale = (GameWindow.SQUARE_SIZE - 1) / current_sprite.width
+            current_sprite.draw()
+        for obj in self.model.enemies.values():
             current_sprite = pyglet.sprite.Sprite(obj.get_image())
             current_sprite.x = obj.posx * square_size
             current_sprite.y = obj.posy * square_size
             current_sprite.scale = (GameWindow.SQUARE_SIZE - 1) / current_sprite.width
             current_sprite.draw()
         self.sprite.draw()
+
         self.fps_display.draw()
 
     def pre_render_glow(self):
@@ -119,16 +130,16 @@ class GameWindow(pyglet.window.Window):
     def on_key_press(self, symbol, modifiers):
         if symbol == key.MOTION_UP:
             self.model.sprite_obj.vely = 1
-            self.model.sprite_obj.dir = 0
+            self.model.sprite_obj.direction = 0
         elif symbol == key.MOTION_DOWN:
             self.model.sprite_obj.vely = - 1
-            self.model.sprite_obj.dir = 2
+            self.model.sprite_obj.direction = 2
         elif symbol == key.MOTION_LEFT:
             self.model.sprite_obj.velx = - 1
-            self.model.sprite_obj.dir = 3
+            self.model.sprite_obj.direction = 3
         elif symbol == key.MOTION_RIGHT:
             self.model.sprite_obj.velx = 1
-            self.model.sprite_obj.dir = 1
+            self.model.sprite_obj.direction = 1
         elif symbol == key.SPACE:
             self.model.sprite_obj.charge_it()
             self.sounds.play_sound('wood')

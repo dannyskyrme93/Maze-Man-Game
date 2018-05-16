@@ -1,22 +1,27 @@
-import GameObject
 import pyglet
+import GameObject
+from Action import Action
+from Agent import Agent
+from GameObject import GameObject
 
-
-class LiveObject(GameObject.GameObject):
-
+class LiveObject(GameObject):
+    ENEMY_VEL = 5
     threshold = 10
 
-    def __init__(self, posx, posy, filename):
+    def __init__(self, posx, posy, filename, is_agent=False):
         super().__init__(posx, posy)
         self.velx = 0
         self.vely = 0
         self.walk_vel = 5
         self.charge = 0
-        self.dir = 0
-        if filename is not None:
-            self.filename = filename
-            self.image = None
-            self.update_image()
+        self.direction = 0
+        self.filename = filename
+        self.image = None
+        self.update_image()
+
+        if is_agent:
+            self.agent = Agent()
+            self.walk_vel = 1
 
     def charge_it(self):
         self.charge += 1
@@ -31,11 +36,11 @@ class LiveObject(GameObject.GameObject):
         return self.charge > 0
 
     def get_file_direction(self):
-        if self.dir == 0:
+        if self.direction == 0:
             return "Up"
-        elif self.dir == 1:
+        elif self.direction == 1:
             return "Right"
-        elif self.dir == 2:
+        elif self.direction == 2:
             return "Down"
         else:
             return "Left"
@@ -43,3 +48,15 @@ class LiveObject(GameObject.GameObject):
     def update_image(self):
         self.image = pyglet.image.load(LiveObject.PREFIX + self.filename + self.get_file_direction() +
                                        LiveObject.POSTFIX)
+
+    def action(self, model):
+        self.direction = self.agent.action(model, self)
+        if self.direction == Action.UP_MOVE:
+            self.vely = self.walk_vel
+        elif self.direction == Action.RIGHT_MOVE:
+            self.velx = self.walk_vel
+        elif self.direction == Action.DOWN_MOVE:
+            self.vely = - self.walk_vel
+        else:
+            self.velx = - self.walk_vel
+        self.update_image()
